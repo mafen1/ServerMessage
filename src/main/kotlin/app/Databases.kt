@@ -24,6 +24,7 @@ import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.sql.DriverManager
@@ -50,12 +51,12 @@ object DatabaseFactory {
         }
     }
 
-    private fun getHikariDatasource(): HikariDataSource {
+    fun getHikariDatasource(): HikariDataSource {
         println("DB URL: $dbUrl")
         println("DB USER: $dbUser")
 
         val config = HikariConfig()
-//        config.driverClassName = "org.postgresql.Driver"
+        config.driverClassName = "org.postgresql.Driver"
         config.jdbcUrl = dbUrl
         config.username = dbUser
         config.password = dbPassword
@@ -65,5 +66,8 @@ object DatabaseFactory {
         config.validate()
         return HikariDataSource(config)
     }
+
+
 }
+
 

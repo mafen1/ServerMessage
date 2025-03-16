@@ -1,6 +1,8 @@
 package com.example
 
+import com.example.app.DatabaseFactory
 import com.example.data.Message
+import com.example.data.MessageRepoImpl
 import com.mongodb.client.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -35,22 +37,26 @@ import org.slf4j.event.*
 
 fun Application.configureRouting() {
     install(ContentNegotiation) {
-        gson {
-        }
+        json()
     }
 
     routing {
-        get("/test"){
-
+        get("/test") {
 
         }
         post("/message") {
-            val message = call.receive<String>()
-            val editedMessage = message.split(",")
-            Message(editedMessage[0], editedMessage[1])
-            call.respond(editedMessage)
+            try {
+                val message = call.receive<Message>()
+                MessageRepoImpl().addMessageToDB(DatabaseFactory.getHikariDatasource(), message)
+                call.respondText("Данные сохранены в базу данных: $message", status = HttpStatusCode.OK)
+            } catch (e: Exception) {
+                call.respondText("Ошибка: ${e.message}", status = HttpStatusCode.BadRequest)
+            }
+
         }
 
-
     }
+
 }
+
+
