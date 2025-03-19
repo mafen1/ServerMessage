@@ -1,34 +1,14 @@
-package com.example.app
+package com.example.data
 
-import com.mongodb.client.*
+import com.example.data.table.MessageTable
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.serialization.gson.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.config.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.autohead.*
-import io.ktor.server.plugins.cachingheaders.*
-import io.ktor.server.plugins.callid.*
-import io.ktor.server.plugins.calllogging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
-import io.ktor.server.websocket.*
-import io.ktor.websocket.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.sql.Connection
-import java.sql.DriverManager
-import org.slf4j.event.*
 
 
 private val appConfig = HoconApplicationConfig(ConfigFactory.load())
@@ -47,7 +27,9 @@ object DatabaseFactory {
         Database.connect(getHikariDatasource())
 
         transaction {
-
+            SchemaUtils.create(
+                MessageTable
+            )
         }
     }
 

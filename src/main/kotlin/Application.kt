@@ -1,14 +1,12 @@
 package com.example
 
 //import com.example.app.configureDatabases
-import com.example.app.DatabaseFactory.initializationDatabase
+import com.example.data.DatabaseFactory.initializationDatabase
 import com.example.app.configureSerialization
+import com.example.data.configureSockets
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main() {
 
@@ -22,7 +20,7 @@ fun main() {
 
 
 fun Application.module() {
-//    configureSockets()
+    configureSockets()
 //    configureFrameworks()
 
 //    configureDatabases()
