@@ -1,4 +1,4 @@
-package com.example.data.table
+package com.example.data.message.table
 
 import org.jetbrains.exposed.sql.Table
 

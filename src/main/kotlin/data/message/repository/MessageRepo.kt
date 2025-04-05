@@ -1,7 +1,7 @@
-package com.example.data.repository
+package com.example.data.message.repository
 
-import com.example.data.model.Message
-import com.example.data.table.MessageTable
+import com.example.data.message.model.Message
+import com.example.data.message.table.MessageTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -31,6 +31,8 @@ class MessageRepoImpl() : MessageRepository {
             )
         }
     }
+
+
 
 }
 

@@ -1,6 +1,8 @@
-package com.example.data
+package com.example.data.database
 
-import com.example.data.table.MessageTable
+import com.example.data.message.table.MessageTable
+import com.example.friend.FriendRequestTable
+import com.example.data.database.table.UserTable
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -10,11 +12,6 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-
-private val appConfig = HoconApplicationConfig(ConfigFactory.load())
-private val dbUrl = System.getenv("DB_POSTGRES_URL")
-private val dbUser = System.getenv("DB_POSTGRES_USER")
-private val dbPassword = System.getenv("DB_PASSWORD")
 
 object DatabaseFactory {
 
@@ -28,12 +25,14 @@ object DatabaseFactory {
 
         transaction {
             SchemaUtils.create(
-                MessageTable
+                MessageTable,
+                UserTable,
+                FriendRequestTable
             )
         }
     }
 
-    fun getHikariDatasource(): HikariDataSource {
+    private fun getHikariDatasource(): HikariDataSource {
         println("DB URL: $dbUrl")
         println("DB USER: $dbUser")
 

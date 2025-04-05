@@ -1,9 +1,4 @@
-package com.example.app
-
-import io.ktor.server.application.*
-import org.koin.dsl.module
-import org.koin.ktor.plugin.Koin
-import org.koin.logger.slf4jLogger
+package com.example.app.sample
 
 //fun Application.configureFrameworks() {
 //    install(Koin) {

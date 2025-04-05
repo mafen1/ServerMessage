@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.app.sample
 
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

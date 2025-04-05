@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.app.sample
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable

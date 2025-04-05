@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.app.sample
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 import org.bson.Document
 import org.bson.types.ObjectId
 

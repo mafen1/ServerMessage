@@ -52,19 +52,20 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 
-    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
-    implementation("org.postgresql:postgresql:42.7.2")
 
-    // Exposed ORM library
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+
+
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:$postgresql_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
+
+    implementation("org.jetbrains.exposed", "exposed-core", exposed_version)
+    implementation("org.jetbrains.exposed", "exposed-jdbc", exposed_version)
+    implementation("org.jetbrains.exposed", "exposed-dao", exposed_version)
+
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 }
 

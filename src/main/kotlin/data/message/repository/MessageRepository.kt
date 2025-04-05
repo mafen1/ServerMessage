@@ -1,7 +1,7 @@
-package com.example.data.repository
+package com.example.data.message.repository
 
-import com.example.data.model.Message
-import com.example.data.table.MessageTable
+import com.example.data.message.model.Message
+import com.example.data.message.table.MessageTable
 
 interface MessageRepository {
     fun addMessageToDB(id: Int, name: String, message: String)
