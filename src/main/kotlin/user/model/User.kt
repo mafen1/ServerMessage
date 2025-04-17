@@ -1,4 +1,4 @@
-package com.example.data.user.model
+package com.example.user.model
 
 import kotlinx.serialization.Serializable
 

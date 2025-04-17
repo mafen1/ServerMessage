@@ -1,10 +1,12 @@
-package com.example.data.user.repository
+package com.example.user.repository
 
-import com.example.data.user.model.User
 import com.example.data.database.table.UserTable
-import com.example.data.user.model.UserRequest
-import com.example.data.user.model.UserResponse
-import org.jetbrains.exposed.sql.*
+import com.example.user.model.User
+import com.example.user.model.UserRequest
+import com.example.user.model.UserResponse
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserRepositoryImpl() : UserRepository {
@@ -13,23 +15,20 @@ class UserRepositoryImpl() : UserRepository {
     override fun addUser(user: User) {
         transaction {
             UserTable.insert {
-                it[UserTable.id] = user.id
-                it[UserTable.name] = user.name
-                it[UserTable.username] = user.userName
-                it[UserTable.friend] = listOf()
-                it[UserTable.token] = user.token.toString()
+                it[id] = user.id
+                it[name] = user.name
+                it[username] = user.userName
+                it[friend] = listOf()
+                it[token] = user.token.toString()
             }
         }
     }
 
-    override fun allUser(): List<User> = transaction {
+    override fun allUser(): List<UserResponse> = transaction {
         UserTable.selectAll().map {
-            User(
-                it[UserTable.id],
-                it[UserTable.name],
-                it[UserTable.username],
-                it[UserTable.friend],
-                it[UserTable.token]
+            UserResponse(
+                userName = it[UserTable.username],
+                name = it[UserTable.name]
             )
         }
     }
@@ -39,7 +38,7 @@ class UserRepositoryImpl() : UserRepository {
 
         transaction {
             UserTable.insert {
-                it[UserTable.friend]
+                it[friend]
             }
         }
     }

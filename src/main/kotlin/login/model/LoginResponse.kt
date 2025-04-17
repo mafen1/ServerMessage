@@ -1,6 +1,6 @@
 package com.example.login.model
 
-import com.example.data.user.model.User
+import com.example.user.model.User
 import kotlinx.serialization.Serializable
 
 @Serializable

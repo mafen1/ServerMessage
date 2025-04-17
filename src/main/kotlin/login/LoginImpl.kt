@@ -3,8 +3,8 @@ package com.example.login
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.login.model.LoginResponse
-import com.example.data.user.model.User
-import com.example.data.user.repository.UserRepositoryImpl
+import com.example.user.model.User
+import com.example.user.repository.UserRepositoryImpl
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaInstant

@@ -1,7 +1,7 @@
 package com.example.login
 
 import com.example.login.model.LoginResponse
-import com.example.data.user.model.User
+import com.example.user.model.User
 
 interface Login {
     fun createJWT(user: User): LoginResponse

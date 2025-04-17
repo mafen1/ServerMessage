@@ -1,7 +1,7 @@
 package com.example.data.database
 
-import com.example.data.message.table.MessageTable
-import com.example.friend.FriendRequestTable
+import com.example.message.table.MessageTable
+import com.example.friend.table.FriendRequestTable
 import com.example.data.database.table.UserTable
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig

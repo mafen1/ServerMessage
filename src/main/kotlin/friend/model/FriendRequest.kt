@@ -1,8 +1,6 @@
-package com.example.friend
+package com.example.friend.model
 
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Table
-import java.math.BigInteger
 
 @Serializable
 data class FriendRequest(
@@ -10,4 +8,4 @@ data class FriendRequest(
     val senderUserName: String,
     val receiverUserName: String,
     val status: String,
-): Event()
+)

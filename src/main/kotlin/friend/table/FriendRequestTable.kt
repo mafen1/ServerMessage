@@ -1,6 +1,5 @@
-package com.example.friend
+package com.example.friend.table
 
-import com.example.data.message.table.MessageTable.autoIncrement
 import org.jetbrains.exposed.sql.Table
 
 object FriendRequestTable : Table() {
