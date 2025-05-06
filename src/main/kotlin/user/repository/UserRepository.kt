@@ -12,4 +12,5 @@ interface UserRepository {
     fun findUser(user: User): User
     fun findUserToken(token: String): User
     fun findUserByName(userName: UserRequest): UserResponse
+    fun findUserByStr(string: UserRequest): List<UserResponse>
 }

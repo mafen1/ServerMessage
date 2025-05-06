@@ -22,5 +22,11 @@ fun Application.UserRouting() {
         get("/allUser") {
             call.respond(UserRepositoryImpl().allUser())
         }
+        post("/findUserByStr") {
+            val str = call.receive<UserRequest>()
+            val users = UserRepositoryImpl().findUserByStr(str)
+            call.respond(users)
+        }
     }
+
 }

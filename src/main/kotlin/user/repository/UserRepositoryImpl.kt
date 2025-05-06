@@ -33,6 +33,7 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
+    // todo доделать
     override fun addFriends(userName: String) {
         val listUserName = mutableListOf<String>().add(userName)
 
@@ -44,13 +45,13 @@ class UserRepositoryImpl() : UserRepository {
     }
 
     override fun findUser(user: User): User {
-       return transaction {
-           UserTable.selectAll().where {
-               UserTable.username eq user.userName
-           }
-               .firstOrNull()
-               ?.toUser()
-               ?: throw IllegalArgumentException("UserNotFound")
+        return transaction {
+            UserTable.selectAll().where {
+                UserTable.username eq user.userName
+            }
+                .firstOrNull()
+                ?.toUser()
+                ?: throw IllegalArgumentException("UserNotFound")
         }
     }
 
@@ -72,7 +73,18 @@ class UserRepositoryImpl() : UserRepository {
             }
                 .firstOrNull()
                 ?.toUserResponse()
-                ?: throw  IllegalArgumentException("UserNotFound")
+                ?: throw IllegalArgumentException("UserNotFound")
+        }
+    }
+
+    override fun findUserByStr(string: UserRequest): List<UserResponse> {
+        val str = "${string.username}%"
+        return transaction {
+            UserTable.selectAll().where {
+                UserTable.username like str
+            }
+                .map { it.toUserResponse() }
+
         }
     }
 
@@ -87,6 +99,14 @@ class UserRepositoryImpl() : UserRepository {
     private fun ResultRow.toUserResponse() = UserResponse(
         userName = this[UserTable.username],
         name = this[UserTable.name]
+    )
+
+    private fun ResultRow.toUserResponses() = listOf(
+        UserResponse
+            (
+            userName = this[UserTable.username],
+            name = this[UserTable.name]
+        )
     )
 }
 
