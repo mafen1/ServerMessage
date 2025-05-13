@@ -2,6 +2,7 @@ package com.example.login
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.example.login.model.LoginRequest
 import com.example.login.model.LoginResponse
 import com.example.user.model.User
 import com.example.user.repository.UserRepositoryImpl
@@ -11,7 +12,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
-class LoginImpl: Login {
+class LoginImpl : Login {
 
     override fun createJWT(user: User): LoginResponse {
 
@@ -39,5 +40,13 @@ class LoginImpl: Login {
 
     override fun validateUser(user: User): Boolean =
         UserRepositoryImpl().findUser(user).userName.isNotEmpty()
+
+    override fun loginAccount(loginRequest: LoginRequest): User =
+        UserRepositoryImpl().findUserByUserNamePassword(loginRequest)
+
+    override fun validateUserByUserName(userName: String): Boolean =
+        UserRepositoryImpl().findUserUserName(userName).token?.isNotEmpty()
+            ?: throw IllegalArgumentException("Не найден пользователь")
+
 
 }

@@ -12,7 +12,7 @@ fun Application.UserRouting() {
         post("/findUserByName") {
             try {
                 val request: UserRequest = call.receive()
-                val user = UserRepositoryImpl().findUserByName(request)
+                val user = UserRepositoryImpl().findUserByUserName(request)
                 call.respond(user)
 
             }catch (e: Exception){

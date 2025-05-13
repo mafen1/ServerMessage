@@ -1,6 +1,7 @@
 package com.example.user.repository
 
 import com.example.data.database.table.UserTable
+import com.example.login.model.LoginRequest
 import com.example.user.model.User
 import com.example.user.model.UserRequest
 import com.example.user.model.UserResponse
@@ -66,7 +67,7 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
-    override fun findUserByName(userRequest: UserRequest): UserResponse {
+    override fun findUserByUserName(userRequest: UserRequest): UserResponse {
         return transaction {
             UserTable.selectAll().where {
                 UserTable.username eq userRequest.username
@@ -88,6 +89,29 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
+    override fun findUserByUserNamePassword(loginRequest: LoginRequest): User {
+        return transaction {
+            UserTable.selectAll().where{
+                UserTable.username eq loginRequest.userName
+                UserTable.name eq loginRequest.password
+            }
+                .firstOrNull()
+                ?.toUser()
+                ?: throw IllegalArgumentException("UserNotFound")
+        }
+    }
+    // todo переделать данную функцию, так как есть такая же функция
+    override fun findUserUserName(userName: String): User {
+        return transaction {
+            UserTable.selectAll().where{
+                UserTable.username eq userName
+            }
+                .firstOrNull()
+                ?.toUser()
+                ?: throw IllegalArgumentException("UserNotFound")
+        }
+    }
+
     private fun ResultRow.toUser() = User(
         id = this[UserTable.id],
         name = this[UserTable.name],
@@ -101,13 +125,7 @@ class UserRepositoryImpl() : UserRepository {
         name = this[UserTable.name]
     )
 
-    private fun ResultRow.toUserResponses() = listOf(
-        UserResponse
-            (
-            userName = this[UserTable.username],
-            name = this[UserTable.name]
-        )
-    )
+
 }
 
 
