@@ -44,9 +44,9 @@ fun Application.LoginRouting() {
         // todo Протестить
         post("/login") {
             val loginRequest: LoginRequest = call.receive()
-
-            if (loginImpl.validateUserByUserName(loginRequest.userName)) {
-                val user = UserRepositoryImpl().findUserUserName(loginRequest.userName)
+            println(loginRequest.toString())
+            if (loginImpl.validateUserByUserName(loginRequest.username)) {
+                val user = UserRepositoryImpl().findUserUserName(loginRequest.username)
                 call.respond(HttpStatusCode.OK, user)
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")

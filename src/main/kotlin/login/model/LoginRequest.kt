@@ -2,9 +2,9 @@ package com.example.login.model
 
 import kotlinx.serialization.Serializable
 
-
+// todo password сделать
 @Serializable
 data class LoginRequest(
-    var userName: String,
-    var password: String
+    var name: String,
+    var username: String
 )

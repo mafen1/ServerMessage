@@ -88,12 +88,12 @@ class UserRepositoryImpl() : UserRepository {
 
         }
     }
-
+    // todo password
     override fun findUserByUserNamePassword(loginRequest: LoginRequest): User {
         return transaction {
             UserTable.selectAll().where{
-                UserTable.username eq loginRequest.userName
-                UserTable.name eq loginRequest.password
+                UserTable.username eq loginRequest.username
+                UserTable.name eq loginRequest.name
             }
                 .firstOrNull()
                 ?.toUser()
