@@ -9,6 +9,7 @@ import com.example.friend.FriendRouting
 import com.example.friend.FriendWebSocket
 import com.example.login.LoginRouting
 import com.example.message.configureSockets
+import com.example.news.routingNews
 import com.example.user.UserRouting
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
@@ -42,4 +43,5 @@ fun Application.module() {
     FriendRouting()
     UserRouting()
     FriendWebSocket()
+    routingNews()
 }

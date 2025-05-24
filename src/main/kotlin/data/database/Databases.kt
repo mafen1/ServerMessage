@@ -1,8 +1,9 @@
 package com.example.data.database
 
-import com.example.message.table.MessageTable
-import com.example.friend.table.FriendRequestTable
 import com.example.data.database.table.UserTable
+import com.example.friend.table.FriendRequestTable
+import com.example.message.table.MessageTable
+import com.example.news.table.NewsTable
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -10,7 +11,9 @@ import io.ktor.server.application.*
 import io.ktor.server.config.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
 
 
 object DatabaseFactory {
@@ -27,10 +30,13 @@ object DatabaseFactory {
             SchemaUtils.create(
                 MessageTable,
                 UserTable,
-                FriendRequestTable
+                FriendRequestTable,
+                NewsTable
             )
         }
     }
+
+
 
     private fun getHikariDatasource(): HikariDataSource {
         println("DB URL: $dbUrl")
@@ -45,6 +51,7 @@ object DatabaseFactory {
         config.isAutoCommit = false
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         config.validate()
+
         return HikariDataSource(config)
     }
 
