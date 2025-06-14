@@ -1,5 +1,6 @@
 package com.example.news
 
+import com.example.news.model.NewsRequest
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -13,10 +14,10 @@ fun Application.routingNews() {
 
     routing {
 
-        post("/uploadNews") {
+        post("/sendImage") {
             var fileDescription = ""
             var fileName = ""
-            val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 100)
+            val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 10)
 
             multipartData.forEachPart { part ->
                 when (part) {
@@ -28,6 +29,8 @@ fun Application.routingNews() {
                         fileName = part.originalFileName as String
                         val file = File("images/$fileName")
                         part.provider().copyAndClose(file.writeChannel())
+
+
                     }
 
                     else -> {}
@@ -37,9 +40,19 @@ fun Application.routingNews() {
 
             call.respondText("$fileDescription is uploaded to 'uploads/$fileName'")
         }
+        post("/addNews") {
+
+        }
+
         get("/allNews") {
 
         }
+        post("/uploadNews1"){
+            val news = call.receive<NewsRequest>()
+
+            news
+        }
+
     }
 
 

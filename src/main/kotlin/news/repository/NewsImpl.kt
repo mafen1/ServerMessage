@@ -12,7 +12,6 @@ class NewsImpl: News {
             NewsTable.insert {
                 it[id] =  newsRequest.id
                 it[name] = newsRequest.userName
-                it[data] = newsRequest.data
                 it[text] = newsRequest.text
             }
         }
