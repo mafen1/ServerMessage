@@ -8,5 +8,6 @@ data class User(
     val name: String,
     val userName: String,
     val friend: List<String>?,
-    val token: String?
+    val token: String?,
+    val password: String?
 )

@@ -28,9 +28,12 @@ fun Application.LoginRouting() {
                         name = user.name,
                         userName = user.userName,
                         friend = listOf(),
-                        token = loginResponse.token
+                        token = loginResponse.token,
+                        password = user.password
                     )
                 )
+
+                println(user)
                 call.respond(loginResponse)
             } catch (e: Exception) {
                 call.respondText("Ошибка ${e.message}")
@@ -44,10 +47,11 @@ fun Application.LoginRouting() {
         // todo Протестить
         post("/login") {
             val loginRequest: LoginRequest = call.receive()
-            println(loginRequest.toString())
             if (loginImpl.validateUserByUserName(loginRequest.username)) {
                 val user = UserRepositoryImpl().findUserUserName(loginRequest.username)
                 call.respond(HttpStatusCode.OK, user)
+                println(loginRequest)
+                println(user)
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")
             }
@@ -64,6 +68,7 @@ fun Application.LoginRouting() {
                         HttpStatusCode.OK,
                         UserRepositoryImpl().findUserToken(token)
                     )
+
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")
                 }

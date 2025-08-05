@@ -2,13 +2,13 @@ package com.example.news.model
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import okhttp3.MultipartBody
-
+import java.io.File
 
 @Serializable
-data class NewsRequest(
+data class News(
     var id: Int,
     var userName: String,
-    var image: String,
+    @Contextual
+    var image: File,
     var text: String
 )

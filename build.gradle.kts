@@ -54,7 +54,7 @@ dependencies {
 
 
 
-    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:$postgresql_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
@@ -67,5 +67,8 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+
+
+
 }
 

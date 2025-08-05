@@ -2,6 +2,7 @@ package com.example.news.repository
 
 import com.example.news.model.NewsRequest
 
-interface News{
+interface News {
     fun addNews(newsRequest: NewsRequest)
+    fun allNews(): List<NewsRequest>
 }

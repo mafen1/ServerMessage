@@ -21,6 +21,7 @@ class UserRepositoryImpl() : UserRepository {
                 it[username] = user.userName
                 it[friend] = listOf()
                 it[token] = user.token.toString()
+                it[password] = user.password
             }
         }
     }
@@ -94,6 +95,7 @@ class UserRepositoryImpl() : UserRepository {
             UserTable.selectAll().where{
                 UserTable.username eq loginRequest.username
                 UserTable.name eq loginRequest.name
+                UserTable.password eq loginRequest.password
             }
                 .firstOrNull()
                 ?.toUser()
@@ -117,7 +119,8 @@ class UserRepositoryImpl() : UserRepository {
         name = this[UserTable.name],
         userName = this[UserTable.username],
         friend = this[UserTable.friend],
-        token = this[UserTable.token]
+        token = this[UserTable.token],
+        password = this[UserTable.password]
     )
 
     private fun ResultRow.toUserResponse() = UserResponse(
