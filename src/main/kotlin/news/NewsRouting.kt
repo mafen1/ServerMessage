@@ -38,12 +38,8 @@ fun Application.routingNews() {
             var desctiption = ""
 
 
-
-
             val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 10)
-            // todo доделать описание новостей
 
-            // todo when ( if )
             multipartData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {

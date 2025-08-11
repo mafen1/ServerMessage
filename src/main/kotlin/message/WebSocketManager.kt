@@ -2,6 +2,7 @@ package com.example.message
 
 import io.ktor.websocket.*
 
+// todo interface
 object WebSocketManager {
     private val currentSession = mutableMapOf<String, WebSocketSession>()
 
