@@ -18,12 +18,36 @@ import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
 
 object DatabaseFactory {
 
-    private val appConfig = HoconApplicationConfig(ConfigFactory.load())
-    private val dbUrl = System.getenv("DB_POSTGRES_URL")
-    private val dbUser = System.getenv("DB_POSTGRES_USER")
-    private val dbPassword = System.getenv("DB_PASSWORD")
+    private lateinit var dbUrl: String
+    private lateinit var dbUser: String
+    private lateinit var dbPassword: String
+
+    fun initConfig(config: ApplicationConfig) {
+
+        println("Загруженные настройки:")
+        println("database.url = ${config.propertyOrNull("database.url")?.getString()}")
+        println("database.user = ${config.propertyOrNull("database.user")?.getString()}")
+
+        // изменить
+        dbUrl = config.propertyOrNull("database.url")?.getString()
+            ?: System.getenv("DB_POSTGRES_URL")
+                    ?: "jdbc:postgresql://localhost:5432/postgres"
+                    ?: throw IllegalStateException("Не задан database.url в application.conf или DB_POSTGRES_URL в переменных окружения")
+
+        dbUser = config.propertyOrNull("database.user")?.getString()
+            ?: System.getenv("DB_POSTGRES_USER")
+                    ?: "postgres"
+                    ?: throw IllegalStateException("Не задан database.user или DB_POSTGRES_USER")
+
+        dbPassword = config.propertyOrNull("database.password")?.getString()
+            ?: System.getenv("DB_POSTGRES_PASSWORD")
+                    ?: "postgres"
+                    ?: throw IllegalStateException("skjdhf")
+    }
+
 
     fun Application.initializationDatabase() {
+        initConfig(environment.config)
         Database.connect(getHikariDatasource())
 
         transaction {
@@ -35,7 +59,6 @@ object DatabaseFactory {
             )
         }
     }
-
 
 
     private fun getHikariDatasource(): HikariDataSource {

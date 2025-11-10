@@ -67,7 +67,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
-
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 
 }

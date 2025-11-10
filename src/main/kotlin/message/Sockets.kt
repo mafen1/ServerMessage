@@ -48,8 +48,7 @@ fun Application.configureSockets() {
                             println("ПОЛУЧЕНО СООБЩЕНИЕ ОТ $userName ДЛЯ $toUsername: $textMessage")
                             WebSocketManager.sendMessageCurrentUser(toUsername, textMessage)
 
-                        }
-                    }
+                        }                    }
                 }
             }
 

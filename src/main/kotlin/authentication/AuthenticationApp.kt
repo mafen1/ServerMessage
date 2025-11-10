@@ -12,10 +12,23 @@ fun Application.AuthenticationApp() {
     val jwtConfig = ktorConfig.config("jwt")
 
 
-    val jwtAudience = System.getenv("audience")
-    val jwtRealm = System.getenv("realm")
-    val jwtDomain = System.getenv("domain")
-    val jwtSecret = System.getenv("secret")
+    val config = environment.config
+
+    val jwtAudience = config.propertyOrNull("jwt.audience")?.getString()
+        ?: System.getenv("JWT_AUDIENCE")
+        ?: "user-server"
+
+    val jwtRealm = config.propertyOrNull("jwt.realm")?.getString()
+        ?: System.getenv("JWT_REALM")
+        ?: "Access to 'hello'"
+
+    val jwtDomain = config.propertyOrNull("jwt.domain")?.getString()
+        ?: System.getenv("JWT_DOMAIN")
+        ?: "http://localhost/"
+
+    val jwtSecret = config.propertyOrNull("jwt.secret")?.getString()
+        ?: System.getenv("JWT_SECRET")
+        ?: "ajlkhf"
 
     authentication {
         jwt {

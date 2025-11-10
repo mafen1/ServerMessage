@@ -1,6 +1,5 @@
 package com.example
 
-//import com.example.app.configureDatabases
 import com.example.app.sample.configureRouting
 import com.example.app.sample.configureSerialization
 import com.example.authentication.AuthenticationApp
@@ -27,12 +26,6 @@ fun main() {
 
 fun Application.module() {
     configureSockets()
-//    configureFrameworks()
-
-//    configureDatabases()
-//    configureMonitoring()
-//    configureHTTP()
-//    configureSecurity()
     initializationDatabase()
     configureSerialization()
     AuthenticationApp()

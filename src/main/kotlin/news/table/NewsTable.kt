@@ -7,6 +7,7 @@ object NewsTable: Table(){
 
     val id: Column<Int> = integer("id").autoIncrement()
     val name: Column<String> = varchar("name", 255)
-    val data = varchar("image", 255)
+    val data: Column<String?> = varchar("image", 255) as Column<String?>
     val text: Column<String> = varchar("description", 255)
+
 }

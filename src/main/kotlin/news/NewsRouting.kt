@@ -1,7 +1,9 @@
 package com.example.news
 
 import com.example.news.model.NewsRequest
+import com.example.news.model.NewsWithOutImage
 import com.example.news.repository.NewsImpl
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.files
@@ -78,6 +80,19 @@ fun Application.routingNews() {
         get("/allNews") {
             val newsImpl = NewsImpl()
             call.respond(newsImpl.allNews())
+        }
+
+        post("/uploadNewsWithOutImage") {
+            try {
+                val newsWithOutImage = call.receive<NewsWithOutImage>()
+                val newsImpl = NewsImpl()
+
+                newsImpl.uploadNewsWithOutImage(newsWithOutImage)
+
+                call.respond(HttpStatusCode.OK, "news save")
+            } catch (e: Exception) {
+               call.respond(HttpStatusCode.BadRequest, "news save failed ${e.toString()}")
+            }
         }
 
 

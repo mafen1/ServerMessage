@@ -9,6 +9,6 @@ import okhttp3.MultipartBody
 data class NewsRequest(
     var id: Int,
     var userName: String,
-    var image: String,
+    var image: String?,
     var text: String
 )
