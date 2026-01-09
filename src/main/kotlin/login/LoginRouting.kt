@@ -15,7 +15,7 @@ fun Application.LoginRouting() {
     val loginImpl = LoginImpl()
 
     routing {
-
+        // TODO обрабатывать ошибки
         post("/register") {
 
             try {
@@ -26,8 +26,8 @@ fun Application.LoginRouting() {
                     User(
                         id = user.id,
                         name = user.name,
-                        userName = user.userName,
-                        friend = listOf(),
+                        username = user.username,
+                        listUserName = listOf(),
                         token = loginResponse.token,
                         password = user.password
                     )
@@ -71,6 +71,7 @@ fun Application.LoginRouting() {
                         HttpStatusCode.OK,
                         UserRepositoryImpl().findUserToken(token)
                     )
+                    println("token validate")
 
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")

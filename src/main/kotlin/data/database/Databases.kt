@@ -23,28 +23,43 @@ object DatabaseFactory {
     private lateinit var dbPassword: String
 
     fun initConfig(config: ApplicationConfig) {
+        println("=== ЗАГРУЖЕННЫЕ НАСТРОЙКИ ===")
 
-        println("Загруженные настройки:")
-        println("database.url = ${config.propertyOrNull("database.url")?.getString()}")
-        println("database.user = ${config.propertyOrNull("database.user")?.getString()}")
+        // Проверяем переменные окружения
+        val envUrl = System.getenv("DB_POSTGRES_URL")
+        val envUser = System.getenv("DB_POSTGRES_USER")
+        val envPassword = System.getenv("DB_POSTGRES_PASSWORD")
 
-        // изменить
+        println("Переменные окружения:")
+        println("DB_POSTGRES_URL: ${envUrl ?: "не установлено"}")
+        println("DB_POSTGRES_USER: ${envUser ?: "не установлено"}")
+        println("DB_POSTGRES_PASSWORD: ${envPassword?.let { "****" } ?: "не установлено"}")
+
+        // Проверяем конфигурацию
+        println("\nКонфигурация из application.conf:")
+        println("database.url: ${config.propertyOrNull("database.url")?.getString() ?: "не указано"}")
+        println("database.user: ${config.propertyOrNull("database.user")?.getString() ?: "не указано"}")
+        println("database.password: ${config.propertyOrNull("database.password")?.getString()?.let { "****" } ?: "не указано"}")
+
+        // Определяем финальные значения
         dbUrl = config.propertyOrNull("database.url")?.getString()
-            ?: System.getenv("DB_POSTGRES_URL")
-                    ?: "jdbc:postgresql://localhost:5432/postgres"
-                    ?: throw IllegalStateException("Не задан database.url в application.conf или DB_POSTGRES_URL в переменных окружения")
+            ?: envUrl
+                    ?: "jdbc:postgresql://localhost:5432/server_message"
 
         dbUser = config.propertyOrNull("database.user")?.getString()
-            ?: System.getenv("DB_POSTGRES_USER")
-                    ?: "postgres"
-                    ?: throw IllegalStateException("Не задан database.user или DB_POSTGRES_USER")
+            ?: envUser
+                    ?: System.getProperty("user.name") // Используем имя текущего пользователя macOS
 
         dbPassword = config.propertyOrNull("database.password")?.getString()
-            ?: System.getenv("DB_POSTGRES_PASSWORD")
-                    ?: "postgres"
-                    ?: throw IllegalStateException("skjdhf")
-    }
+            ?: envPassword
+                    ?: "" // Пустой пароль по умолчанию для macOS
 
+        println("\nИспользуемые параметры подключения:")
+        println("DB URL: $dbUrl")
+        println("DB USER: $dbUser")
+        println("DB PASSWORD: ${if (dbPassword.isNotEmpty()) "****" else "пустой"}")
+        println("=============================")
+    }
 
     fun Application.initializationDatabase() {
         initConfig(environment.config)
@@ -64,20 +79,24 @@ object DatabaseFactory {
     private fun getHikariDatasource(): HikariDataSource {
         println("DB URL: $dbUrl")
         println("DB USER: $dbUser")
+        println("DB PASSWORD: ${if (dbPassword.isNotEmpty()) "****" else "пустой"}")
 
-        val config = HikariConfig()
-        config.driverClassName = "org.postgresql.Driver"
-        config.jdbcUrl = dbUrl
-        config.username = dbUser
-        config.password = dbPassword
-        config.maximumPoolSize = 3
-        config.isAutoCommit = false
-        config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-        config.validate()
+        val config = HikariConfig().apply {
+            driverClassName = "org.postgresql.Driver"
+            jdbcUrl = dbUrl
+            username = dbUser
+            password = dbPassword
+            maximumPoolSize = 3
+            isAutoCommit = true // Установите true вместо false
+            connectionTimeout = 30000
+            idleTimeout = 600000
+            maxLifetime = 1800000
+            connectionTestQuery = "SELECT 1"
+            validate()
+        }
 
         return HikariDataSource(config)
     }
-
 
 }
 

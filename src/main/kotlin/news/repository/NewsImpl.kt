@@ -36,7 +36,6 @@ class NewsImpl : News {
         }
     }
 
-
     override fun uploadNewsWithOutImage(newsWithOutImage: NewsWithOutImage) {
         transaction {
             NewsTable.insert {
@@ -46,7 +45,6 @@ class NewsImpl : News {
             }
         }
     }
-
 
     private fun ResultRow.toNews() = NewsRequest(
         id = this[NewsTable.id],

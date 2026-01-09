@@ -15,18 +15,17 @@ import kotlin.time.Duration.Companion.days
 class LoginImpl : Login {
 
     override fun createJWT(user: User): LoginResponse {
-
         val time = Clock.System.now().plus(70.days)
-        val jwtAudience = System.getenv("audience")
-        val jwtRealm = System.getenv("realm")
-        val jwtDomain = System.getenv("domain")
-        val jwtSecret = System.getenv("secret")
+
+        val jwtAudience = requireNotNull(System.getenv("audience")) { "Missing env variable: audience" }
+        val jwtDomain = requireNotNull(System.getenv("domain")) { "Missing env variable: domain" }
+        val jwtSecret = requireNotNull(System.getenv("secret")) { "Missing env variable: secret" }
 
         val token = JWT.create()
             .withAudience(jwtAudience)
             .withIssuer(jwtDomain)
             .withExpiresAt(time.toJavaInstant())
-            .sign(Algorithm.HMAC256(jwtSecret))
+            .sign(Algorithm.HMAC256(jwtSecret)) // Теперь secret точно не null
 
         return LoginResponse(
             token = token,
@@ -39,7 +38,7 @@ class LoginImpl : Login {
         UserRepositoryImpl().findUserToken(token).token!!.isNotEmpty()
 
     override fun validateUser(user: User): Boolean =
-        UserRepositoryImpl().findUser(user).userName.isNotEmpty()
+        UserRepositoryImpl().findUser(user).username.isNotEmpty()
 
     override fun loginAccount(loginRequest: LoginRequest): User =
         UserRepositoryImpl().findUserByUserNamePassword(loginRequest)

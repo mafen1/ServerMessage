@@ -1,11 +1,8 @@
 package com.example.data.database.table
-// Импортируем функцию array
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.VarCharColumnType
-import java.sql.Types.VARCHAR
-import org.jetbrains.exposed.sql.functions.array.ArrayGet
 
 object UserTable: Table() {
 
@@ -14,7 +11,7 @@ object UserTable: Table() {
     val id = integer("id").autoIncrement()
     val name = varchar("name", 100)
     val username = varchar("username", 100)
-    val friend = array("listUserName", columnType = VarCharColumnType())
+    val listUserName = array("listUserName", columnType = VarCharColumnType())
     val token = varchar("token", 10000)
     val password: Column<String?> = varchar("password", 100) as Column<String?>
 }

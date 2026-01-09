@@ -1,22 +1,43 @@
 package com.example.user
 
+import com.example.login.model.LoginResponse
+import com.example.user.model.User
 import com.example.user.model.UserRequest
 import com.example.user.repository.UserRepositoryImpl
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.gson.gson
 import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.UserRouting() {
-    routing {
-        post("/findUserByName") {
-            try {
-                val request: UserRequest = call.receive()
-                val user = UserRepositoryImpl().findUserByUserName(request)
-                call.respond(user)
 
-            }catch (e: Exception){
-                call.respond(e.message.toString())
+    install(ContentNegotiation) {
+        gson {
+            setPrettyPrinting()
+            serializeNulls()
+        }
+    }
+
+    routing {
+
+        post("/register") {
+            try {
+                val user = call.receive<User>()
+                UserRepositoryImpl().addUser(user)
+
+                // Создаем успешный ответ с токеном и пользователем
+                val token = "temp_token_${user.username}"
+                val loginResponse = LoginResponse(
+                    token = token,
+                    expiresAt = "2024-12-31T23:59:59Z",
+                    user = user.copy(token = token)
+                )
+                call.respond(HttpStatusCode.Created, loginResponse)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to e.message))
             }
         }
         get("/allUser") {

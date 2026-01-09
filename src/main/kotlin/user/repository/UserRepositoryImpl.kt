@@ -18,10 +18,10 @@ class UserRepositoryImpl() : UserRepository {
             UserTable.insert {
                 it[id] = user.id
                 it[name] = user.name
-                it[username] = user.userName
-                it[friend] = listOf()
+                it[username] = user.username
+                it[listUserName] = listOf()
                 it[token] = user.token.toString()
-                it[password] = user.password
+                it[password] = user.password ?: ""
             }
         }
     }
@@ -35,13 +35,12 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
-    // todo доделать
     override fun addFriends(userName: String) {
         val listUserName = mutableListOf<String>().add(userName)
 
         transaction {
             UserTable.insert {
-                it[friend]
+                it[this.listUserName]
             }
         }
     }
@@ -49,7 +48,7 @@ class UserRepositoryImpl() : UserRepository {
     override fun findUser(user: User): User {
         return transaction {
             UserTable.selectAll().where {
-                UserTable.username eq user.userName
+                UserTable.username eq user.username
             }
                 .firstOrNull()
                 ?.toUser()
@@ -117,8 +116,8 @@ class UserRepositoryImpl() : UserRepository {
     private fun ResultRow.toUser() = User(
         id = this[UserTable.id],
         name = this[UserTable.name],
-        userName = this[UserTable.username],
-        friend = this[UserTable.friend],
+        username = this[UserTable.username],
+        listUserName = this[UserTable.listUserName],
         token = this[UserTable.token],
         password = this[UserTable.password]
     )
