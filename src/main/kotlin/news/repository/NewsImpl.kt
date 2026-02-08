@@ -1,56 +1,78 @@
 package com.example.news.repository
 
-import com.example.data.database.table.UserTable
 import com.example.news.model.NewsRequest
-import com.example.news.model.NewsWithOutImage
+import com.example.news.model.NewsResponse
 import com.example.news.table.NewsTable
-import com.example.user.model.UserResponse
-import org.jetbrains.exposed.sql.ResultRow
+import com.example.news.table.NewsTable.avatarString
+import com.example.news.table.NewsTable.comments
+import com.example.news.table.NewsTable.countComment
+import com.example.news.table.NewsTable.countLike
+import com.example.news.table.NewsTable.date
+import com.example.news.table.NewsTable.description
+import com.example.news.table.NewsTable.imageNews
+import com.example.news.table.NewsTable.nameAuthor
+import com.example.news.table.NewsTable.userNameAuthor
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class NewsImpl : News {
 
-    override fun addNews(newsRequest: NewsRequest) {
+    override fun addNews(newsRequest: NewsRequest, newsImage: String) {
         transaction {
             NewsTable.insert {
-                it[id] = newsRequest.id
-                it[name] = newsRequest.userName
-                it[text] = newsRequest.text
-                it[data] = newsRequest.image
+                it[userNameAuthor] = newsRequest.userNameAuthor
+                it[nameAuthor] = newsRequest.nameAuthor
+                it[date] = newsRequest.date
+                it[countLike] = newsRequest.countLike
+                it[countComment] = newsRequest.countComment
+                it[avatarString] = newsRequest.avatarAuthor
+                it[description] = newsRequest.description
+                it[comments] = newsRequest.comment
+                it[imageNews] = newsImage
+
             }
         }
     }
 
-    override fun allNews(): List<NewsRequest> {
+    override fun allNews(): List<NewsResponse> {
         return transaction {
             NewsTable.selectAll().map {
-                NewsRequest(
-                    id = it[NewsTable.id],
-                    userName = it[NewsTable.name],
-                    image = it[NewsTable.data],
-                    text = it[NewsTable.text]
+                NewsResponse(
+                    userNameAuthor = it[userNameAuthor],
+                    nameAuthor = it[nameAuthor],
+                    date = it[date],
+                    countLike = it[countLike],
+                    countComment = it[countComment],
+                    avatarAuthor = it[avatarString],
+                    description = it[description],
+                    comment = it[comments],
+                    newsImage = it[imageNews]
                 )
             }
         }
     }
 
-    override fun uploadNewsWithOutImage(newsWithOutImage: NewsWithOutImage) {
+    override fun uploadNewsWithOutImage(newsWithOutImage: NewsRequest) {
         transaction {
             NewsTable.insert {
-                it[id] = newsWithOutImage.id
-                it[name] = newsWithOutImage.userName
-                it[text] = newsWithOutImage.text
+                it[userNameAuthor] = newsWithOutImage.userNameAuthor
+                it[nameAuthor] = newsWithOutImage.nameAuthor
+                it[date] = newsWithOutImage.date
+                it[countLike] = newsWithOutImage.countLike
+                it[countComment] = newsWithOutImage.countComment
+                it[avatarString] = newsWithOutImage.avatarAuthor
+                it[description] = newsWithOutImage.description
+                it[comments] = newsWithOutImage.comment
             }
         }
     }
 
-    private fun ResultRow.toNews() = NewsRequest(
-        id = this[NewsTable.id],
-        userName = this[NewsTable.name],
-        image = this[NewsTable.data],
-        text = this[NewsTable.text]
-    )
+//    private fun ResultRow.toNews() = NewsRequest(
+//        id = this[NewsTable.id],
+//        userName = this[NewsTable.name],
+//        image = this[NewsTable.data],
+//        text = this[NewsTable.text]
+//    )
 
 }

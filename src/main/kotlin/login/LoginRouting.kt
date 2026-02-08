@@ -44,11 +44,11 @@ fun Application.LoginRouting() {
             UserRepositoryImpl().addFriends("@gjdfs")
         }
 
-        // todo Протестить
         post("/login") {
             try {
                 val loginRequest: LoginRequest = call.receive()
                 if (loginImpl.validateUserByUserName(loginRequest.username)) {
+
                     val user = UserRepositoryImpl().findUserUserName(loginRequest.username)
                     call.respond(HttpStatusCode.OK, user)
 
@@ -56,11 +56,11 @@ fun Application.LoginRouting() {
                     call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")
                 }
             } catch (e: Exception) {
-                TODO("Not yet implemented")
+                println(e.toString())
             }
         }
 
-        post("/findUserToken") {
+        post("/getUserToken") {
             try {
                 val request: TokenRequest = call.receive()
                 val token = request.token

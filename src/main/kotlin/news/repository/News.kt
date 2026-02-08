@@ -1,10 +1,10 @@
 package com.example.news.repository
 
 import com.example.news.model.NewsRequest
-import com.example.news.model.NewsWithOutImage
+import com.example.news.model.NewsResponse
 
 interface News {
-    fun addNews(newsRequest: NewsRequest)
-    fun allNews(): List<NewsRequest>
-    fun uploadNewsWithOutImage(newsWithOutImage: NewsWithOutImage)
+    fun addNews(newsRequest: NewsRequest, news: String)
+    fun allNews(): List<NewsResponse>
+    fun uploadNewsWithOutImage(newsWithOutImage: NewsRequest)
 }

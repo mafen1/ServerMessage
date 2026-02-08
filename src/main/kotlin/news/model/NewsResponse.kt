@@ -3,7 +3,8 @@ package com.example.news.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NewsWithOutImage(
+data class NewsResponse(
+
     var userNameAuthor: String,
     var nameAuthor: String,
     var date: String,
@@ -11,6 +12,6 @@ data class NewsWithOutImage(
     val countComment: Int,
     val avatarAuthor: String?,
     val description: String,
-    val comment: List<String>
-
+    val comment: List<String>,
+    val newsImage: String
 )

@@ -1,99 +1,100 @@
 package com.example.news
 
 import com.example.news.model.NewsRequest
-import com.example.news.model.NewsWithOutImage
 import com.example.news.repository.NewsImpl
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
-import io.ktor.server.http.content.files
-import io.ktor.server.http.content.static
-import io.ktor.server.http.content.staticFiles
-import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.http.content.*
+import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
+import kotlinx.serialization.json.Json
+import org.slf4j.event.Level
 import java.io.File
-import java.util.Random
-import java.util.logging.Level
 
 fun Application.routingNews() {
 
-    install(CallLogging){
-       level = org.slf4j.event.Level.INFO
+    install(CallLogging) {
+        level = Level.INFO
+
     }
 
     routing {
 
         static(
-            "/images"){
+            "/images"
+        ) {
             files("images")
         }
 
         post("/uploadNews") {
-            var fileDescription = ""
-            var fileName = ""
-
-            var userName: String? = ""
-            var desctiption = ""
-
-
             val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 10)
+
+            var fileName = ""
+            var newsRequest: NewsRequest? = null
 
             multipartData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
-                        if (part.name == "userName") {
-                            userName = part.value
-                        }
-                        if (part.name == "nameNews"){
-                            desctiption = part.value
+                        if (part.name == "NewsRequest") {
+                            try {
+                                newsRequest = Json.decodeFromString(part.value)
+                                println("✓ Parsed NewsRequest: $newsRequest")
+                            } catch (e: Exception) {
+                                println("✗ Failed to parse NewsRequest: ${e.message}")
+                            }
                         }
                     }
-
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String
-                        val file = File("images/${fileName}.jpg")
+                        fileName = part.originalFileName ?: "unknown.jpg"
+                        val file = File("images/${fileName}")
                         part.provider().copyAndClose(file.writeChannel())
-                        println(file.toString())
-
+                        println("✓ Saved file: ${file.absolutePath}")
                     }
-
                     else -> {}
                 }
-
-                NewsImpl().addNews(NewsRequest(
-                    id = Random().nextInt(),
-                    userName = userName!!,
-                    image = fileName,
-                    text = desctiption
-                ))
-                part.dispose()
-
             }
 
-            call.respondText("$fileDescription is uploaded to 'uploads/$fileName'")
+            try {
+                if (newsRequest != null) {
+                    NewsImpl().addNews(newsRequest!!, fileName)
+                    call.respondText("News uploaded successfully", status = HttpStatusCode.OK)
+                } else {
+                    println("✗ newsRequest is null!")
+                    call.respond(HttpStatusCode.BadRequest, "Missing NewsRequest field")
+                }
+            } catch (e: Exception) {
+                println("✗ Exception: ${e.message}")
+                e.printStackTrace()
+                call.respond(HttpStatusCode.InternalServerError, "Server error: ${e.message}")
+            }
         }
 
         get("/allNews") {
-            val newsImpl = NewsImpl()
-            call.respond(newsImpl.allNews())
-        }
 
-        post("/uploadNewsWithOutImage") {
             try {
-                val newsWithOutImage = call.receive<NewsWithOutImage>()
                 val newsImpl = NewsImpl()
-
-                newsImpl.uploadNewsWithOutImage(newsWithOutImage)
-
-                call.respond(HttpStatusCode.OK, "news save")
+                call.respond(newsImpl.allNews())
             } catch (e: Exception) {
-               call.respond(HttpStatusCode.BadRequest, "news save failed ${e.toString()}")
+                println("All news ${e.toString()}")
             }
         }
+
+//        post("/uploadNewsWithOutImage") {
+//            val newsWithOutImage = call.receive<NewsWithOutImage>()
+//            println(newsWithOutImage.toString())
+//            try {
+//                NewsImpl().uploadNewsWithOutImage(newsWithOutImage)
+//                call.respond(HttpStatusCode.OK, "news save")
+//            } catch (e: Exception) {
+//                call.respond(HttpStatusCode.BadRequest, "news save failed ${e.toString()}")
+//                println(e.toString())
+//            }
+//        }
 
 
     }

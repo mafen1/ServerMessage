@@ -4,17 +4,24 @@ import com.example.login.model.LoginResponse
 import com.example.user.model.User
 import com.example.user.model.UserRequest
 import com.example.user.repository.UserRepositoryImpl
-import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.gson.gson
+import io.ktor.http.*
+import io.ktor.serialization.gson.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 
 fun Application.UserRouting() {
 
     install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+            ignoreUnknownKeys = true
+        })
         gson {
             setPrettyPrinting()
             serializeNulls()
