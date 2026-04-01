@@ -22,9 +22,10 @@ fun Application.LoginRouting() {
                 val user = call.receive<User>()
                 val loginResponse = loginImpl.createJWT(user)
 
+                // id будет сгенерирован автоматически базой данных
                 UserRepositoryImpl().addUser(
                     User(
-                        id = user.id,
+                        id = 0, // 0 означает, что ID сгенерируется БД
                         name = user.name,
                         username = user.username,
                         listUserName = listOf(),

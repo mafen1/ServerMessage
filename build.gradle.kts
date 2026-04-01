@@ -59,21 +59,15 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresql_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
 
-    implementation("org.jetbrains.exposed", "exposed-core", exposed_version)
-    implementation("org.jetbrains.exposed", "exposed-jdbc", exposed_version)
-    implementation("org.jetbrains.exposed", "exposed-dao", exposed_version)
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
 
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    implementation("org.jetbrains.exposed:exposed-java-time:0.51.0") // или актуальная версия
-    implementation("org.jetbrains.exposed:exposed-core:0.51.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.51.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.51.0")
-    implementation("org.jetbrains.exposed:exposed-jodatime:0.51.0") // опционально
 
 
 }

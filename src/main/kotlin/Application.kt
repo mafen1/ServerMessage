@@ -21,9 +21,9 @@ fun main() {
 }
 
 fun Application.module() {
-    configureSockets()
     initializationDatabase()
     configureSerialization()
+    configureSockets()
     AuthenticationApp()
     configureRouting()
     LoginRouting()
@@ -31,4 +31,5 @@ fun Application.module() {
     UserRouting()
     FriendWebSocket()
     routingNews()
+
 }

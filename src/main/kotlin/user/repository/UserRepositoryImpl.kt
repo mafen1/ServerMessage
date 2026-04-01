@@ -15,14 +15,13 @@ class UserRepositoryImpl() : UserRepository {
 
     override fun addUser(user: User) {
         transaction {
-            UserTable.insert {
-                it[id] = user.id
+            val userId = UserTable.insert {
                 it[name] = user.name
                 it[username] = user.username
                 it[listUserName] = listOf()
                 it[token] = user.token.toString()
                 it[password] = user.password ?: ""
-            }
+            } get UserTable.id
         }
     }
 

@@ -29,24 +29,6 @@ fun Application.UserRouting() {
     }
 
     routing {
-
-        post("/register") {
-            try {
-                val user = call.receive<User>()
-                UserRepositoryImpl().addUser(user)
-
-                // Создаем успешный ответ с токеном и пользователем
-                val token = "temp_token_${user.username}"
-                val loginResponse = LoginResponse(
-                    token = token,
-                    expiresAt = "2024-12-31T23:59:59Z",
-                    user = user.copy(token = token)
-                )
-                call.respond(HttpStatusCode.Created, loginResponse)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, mapOf("error" to e.message))
-            }
-        }
         get("/allUser") {
             call.respond(UserRepositoryImpl().allUser())
         }
