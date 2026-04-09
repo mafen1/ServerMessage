@@ -62,7 +62,7 @@ fun Application.routingNews() {
             try {
                 if (newsRequest != null) {
                     NewsImpl().addNews(newsRequest!!, fileName)
-                    call.respondText("News uploaded successfully", status = HttpStatusCode.OK)
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "News uploaded successfully"))
                 } else {
                     println("✗ newsRequest is null!")
                     call.respond(HttpStatusCode.BadRequest, "Missing NewsRequest field")

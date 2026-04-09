@@ -17,15 +17,15 @@ class LoginImpl : Login {
     override fun createJWT(user: User): LoginResponse {
         val time = Clock.System.now().plus(70.days)
 
-        val jwtAudience = requireNotNull(System.getenv("audience")) { "Missing env variable: audience" }
-        val jwtDomain = requireNotNull(System.getenv("domain")) { "Missing env variable: domain" }
-        val jwtSecret = requireNotNull(System.getenv("secret")) { "Missing env variable: secret" }
+        val jwtSecret = System.getenv("JWT_SECRET") 
+            ?: System.getProperty("JWT_SECRET")
+            ?: "x7K9mP2vL5nQ8wR3tY6uI0oA4sD7fG1hJ"
 
         val token = JWT.create()
-            .withAudience(jwtAudience)
-            .withIssuer(jwtDomain)
+            .withAudience("user-server")
+            .withIssuer("http://localhost/")
             .withExpiresAt(time.toJavaInstant())
-            .sign(Algorithm.HMAC256(jwtSecret)) // Теперь secret точно не null
+            .sign(Algorithm.HMAC256(jwtSecret))
 
         return LoginResponse(
             token = token,
@@ -34,11 +34,37 @@ class LoginImpl : Login {
         )
     }
 
-    override fun validateToken(token: String): Boolean =
-        UserRepositoryImpl().findUserToken(token).token!!.isNotEmpty()
+    override fun validateToken(token: String): Boolean {
+        val newSecret = System.getenv("JWT_SECRET") 
+            ?: System.getProperty("JWT_SECRET")
+            ?: "x7K9mP2vL5nQ8wR3tY6uI0oA4sD7fG1hJ"
+        val oldSecret = "my-secret-key-12345"
+        
+        return try {
+            // Пробуем сначала новый secret
+            JWT.require(Algorithm.HMAC256(newSecret))
+                .withAudience("user-server")
+                .withIssuer("http://localhost/")
+                .build()
+                .verify(token)
+            true
+        } catch (e: Exception) {
+            try {
+                // Пробуем старый secret для backward compatibility
+                JWT.require(Algorithm.HMAC256(oldSecret))
+                    .withAudience("message-app-audience")
+                    .withIssuer("message-app-domain")
+                    .build()
+                    .verify(token)
+                true
+            } catch (e2: Exception) {
+                false
+            }
+        }
+    }
 
     override fun validateUser(user: User): Boolean =
-        UserRepositoryImpl().findUser(user).username.isNotEmpty()
+        UserRepositoryImpl().findUser(user).userName.isNotEmpty()
 
     override fun loginAccount(loginRequest: LoginRequest): User =
         UserRepositoryImpl().findUserByUserNamePassword(loginRequest)

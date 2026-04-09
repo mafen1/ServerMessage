@@ -49,11 +49,13 @@ fun Application.configureSockets() {
                                 val toUsername = parts[1]
                                 val textMessage = parts[2]
                                 println("ПОЛУЧЕНО СООБЩЕНИЕ ОТ $userName ДЛЯ $toUsername: $textMessage")
-                                
-                                // Сохраняем сообщение в базу данных
-                                messageRepo.addMessageToDB(0, userName, textMessage)
-                                
-                                WebSocketManager.sendMessageCurrentUser(toUsername, textMessage)
+
+                                messageRepo.addMessageToDB(0, userName, toUsername, textMessage)
+
+                                // Отправляем сообщение получателю
+                                WebSocketManager.sendMessageCurrentUser(toUsername, userName, textMessage)
+                                // Отправляем подтверждение отправителю (чтобы он видел своё сообщение)
+                                WebSocketManager.sendMessageCurrentUser(userName, userName, textMessage)
 
                             }
                         }

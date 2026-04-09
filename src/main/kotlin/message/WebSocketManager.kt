@@ -11,9 +11,11 @@ object WebSocketManager {
         println("Добавлена сессия для $userName. Текущие сессии: ${currentSession.keys}")
     }
 
-    suspend fun sendMessageCurrentUser(userName: String, message: String){
-        currentSession[userName]?.send(message)
-        println("✅ Отправка сообщения: «$message» ➔ $userName")
+    suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, message: String){
+        // Формат: senderUsername:message
+        val formattedMessage = "$senderUsername:$message"
+        currentSession[userName]?.send(formattedMessage)
+        println("✅ Отправка сообщения: «$formattedMessage» ➔ $userName (от $senderUsername)")
     }
 
     fun session() = currentSession

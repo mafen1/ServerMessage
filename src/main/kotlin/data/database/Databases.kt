@@ -52,7 +52,7 @@ object DatabaseFactory {
         Database.connect(getHikariDatasource())
 
         transaction {
-            SchemaUtils.create(
+            SchemaUtils.createMissingTablesAndColumns(
                 MessageTable,
                 UserTable,
                 FriendRequestTable,

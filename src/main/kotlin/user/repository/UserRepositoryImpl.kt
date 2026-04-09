@@ -17,7 +17,7 @@ class UserRepositoryImpl() : UserRepository {
         transaction {
             val userId = UserTable.insert {
                 it[name] = user.name
-                it[username] = user.username
+                it[username] = user.userName
                 it[listUserName] = listOf()
                 it[token] = user.token.toString()
                 it[password] = user.password ?: ""
@@ -35,8 +35,6 @@ class UserRepositoryImpl() : UserRepository {
     }
 
     override fun addFriends(userName: String) {
-        val listUserName = mutableListOf<String>().add(userName)
-
         transaction {
             UserTable.insert {
                 it[this.listUserName]
@@ -47,7 +45,7 @@ class UserRepositoryImpl() : UserRepository {
     override fun findUser(user: User): User {
         return transaction {
             UserTable.selectAll().where {
-                UserTable.username eq user.username
+                UserTable.username eq user.userName
             }
                 .firstOrNull()
                 ?.toUser()
@@ -69,7 +67,7 @@ class UserRepositoryImpl() : UserRepository {
     override fun findUserByUserName(userRequest: UserRequest): UserResponse {
         return transaction {
             UserTable.selectAll().where {
-                UserTable.username eq userRequest.username
+                UserTable.username eq userRequest.userName
             }
                 .firstOrNull()
                 ?.toUserResponse()
@@ -78,7 +76,7 @@ class UserRepositoryImpl() : UserRepository {
     }
 
     override fun findUserByStr(string: UserRequest): List<UserResponse> {
-        val str = "${string.username}%"
+        val str = "${string.userName}%"
         return transaction {
             UserTable.selectAll().where {
                 UserTable.username like str
@@ -91,7 +89,7 @@ class UserRepositoryImpl() : UserRepository {
     override fun findUserByUserNamePassword(loginRequest: LoginRequest): User {
         return transaction {
             UserTable.selectAll().where{
-                UserTable.username eq loginRequest.username
+                UserTable.username eq loginRequest.userName
                 UserTable.name eq loginRequest.name
                 UserTable.password eq loginRequest.password
             }
@@ -100,7 +98,6 @@ class UserRepositoryImpl() : UserRepository {
                 ?: throw IllegalArgumentException("UserNotFound")
         }
     }
-    // todo переделать данную функцию, так как есть такая же функция
     override fun findUserUserName(userName: String): User {
         return transaction {
             UserTable.selectAll().where{
@@ -115,7 +112,7 @@ class UserRepositoryImpl() : UserRepository {
     private fun ResultRow.toUser() = User(
         id = this[UserTable.id],
         name = this[UserTable.name],
-        username = this[UserTable.username],
+        userName = this[UserTable.username],
         listUserName = this[UserTable.listUserName],
         token = this[UserTable.token],
         password = this[UserTable.password]

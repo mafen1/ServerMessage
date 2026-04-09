@@ -1,12 +1,12 @@
 package com.example
 
-import com.example.app.sample.configureRouting
 import com.example.app.sample.configureSerialization
 import com.example.authentication.AuthenticationApp
 import com.example.data.database.DatabaseFactory.initializationDatabase
 import com.example.friend.FriendRouting
 import com.example.friend.FriendWebSocket
 import com.example.login.LoginRouting
+import com.example.message.MessageRouting
 import com.example.message.configureSockets
 import com.example.news.routingNews
 import com.example.user.UserRouting
@@ -25,10 +25,10 @@ fun Application.module() {
     configureSerialization()
     configureSockets()
     AuthenticationApp()
-    configureRouting()
     LoginRouting()
     FriendRouting()
     UserRouting()
+    MessageRouting()
     FriendWebSocket()
     routingNews()
 

@@ -1,55 +1,103 @@
-# ktor-sample
+# NOTESAPP
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+Android-приложение для создания и управления заметками, разработанное на **Kotlin**.
 
-Here are some useful links to get you started:
+## 📱 Описание
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+NOTESAPP — это удобное приложение для быстрого создания, редактирования и хранения заметок прямо на вашем Android-устройстве.
 
-## Features
+## 🚀 Технологии
 
-Here's a list of features included in this project:
+- **Kotlin** — основной язык
+- **Android SDK** — платформа
+- **Gradle** — система сборки
+- **Android Studio / IntelliJ IDEA** — среда разработки
+- **Room / SQLite** — локальная база данных для хранения заметок
 
-| Name                                                                   | Description                                                                        |
-| ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [WebSockets](https://start.ktor.io/p/ktor-websockets)                  | Adds WebSocket protocol support for bidirectional client connections               |
-| [Koin](https://start.ktor.io/p/koin)                                   | Provides dependency injection                                                      |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [Postgres](https://start.ktor.io/p/postgres)                           | Adds Postgres database to your application                                         |
-| [MongoDB](https://start.ktor.io/p/mongodb)                             | Adds MongoDB database to your application                                          |
-| [GSON](https://start.ktor.io/p/ktor-gson)                              | Handles JSON serialization using GSON library                                      |
-| [Call Logging](https://start.ktor.io/p/call-logging)                   | Logs client requests                                                               |
-| [Call ID](https://start.ktor.io/p/callid)                              | Allows to identify a request/call.                                                 |
-| [Caching Headers](https://start.ktor.io/p/caching-headers)             | Provides options for responding with standard cache-control headers                |
-| [Static Content](https://start.ktor.io/p/static-content)               | Serves static files from defined locations                                         |
-| [AutoHeadResponse](https://start.ktor.io/p/auto-head-response)         | Provides automatic responses for HEAD requests                                     |
-| [Request Validation](https://start.ktor.io/p/request-validation)       | Adds validation for incoming requests                                              |
-| [Sessions](https://start.ktor.io/p/ktor-sessions)                      | Adds support for persistent sessions through cookies or headers                    |
-| [Authentication](https://start.ktor.io/p/auth)                         | Provides extension point for handling the Authorization header                     |
-| [Authentication Basic](https://start.ktor.io/p/auth-basic)             | Handles 'Basic' username / password authentication scheme                          |
+## 📋 Функциональность
 
-## Building & Running
+- ✅ Создание новых заметок
+- ✅ Редактирование существующих заметок
+- ✅ Удаление заметок
+- ✅ Сохранение данных локально на устройстве
+- ✅ Простой и интуитивный интерфейс
+- ✅ Автоматическое сохранение при изменении
 
-To build or run the project, use one of the following tasks:
+## 🛠 Установка и запуск
 
-| Task                          | Description                                                          |
-| -------------------------------|---------------------------------------------------------------------- |
-| `./gradlew test`              | Run the tests                                                        |
-| `./gradlew build`             | Build everything                                                     |
-| `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the docker image locally                                     |
-| `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local docker image                                     |
+### Требования
 
-If the server starts successfully, you'll see the following output:
+- Android Studio Arctic Fox или новее
+- JDK 11+
+- Android SDK 21+ (Android 5.0)
 
-```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+### Запуск проекта
+
+1. Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/mafen1/NOTESAPP.git
 ```
 
+2. Откройте проект в Android Studio
+
+3. Синхронизируйте Gradle-зависимости
+
+4. Запустите на эмуляторе или физическом устройстве
+
+```bash
+./gradlew installDebug
+```
+
+## 📁 Структура проекта
+
+```
+NOTESAPP/
+├── app/
+│   ├── src/main/
+│   │   ├── java/com/mafen/notesapp/
+│   │   │   ├── MainActivity.kt        # Главная активность (список заметок)
+│   │   │   ├── NoteDetailActivity.kt  # Экран редактирования заметки
+│   │   │   ├── data/                  # Слой данных (Room/DAO)
+│   │   │   │   ├── Note.kt            # Модель заметки
+│   │   │   │   ├── NoteDao.kt         # Data Access Object
+│   │   │   │   └── NoteDatabase.kt    # Конфигурация БД
+│   │   │   └── adapter/               # RecyclerView адаптер
+│   │   └── res/                       # Ресурсы
+│   └── build.gradle.kts
+├── build.gradle.kts
+├── settings.gradle.kts
+└── gradle.properties
+```
+
+## 🏗 Архитектура
+
+Приложение использует локальную базу данных **Room (SQLite)** для постоянного хранения заметок. Архитектура включает:
+
+- **Entity** — модель данных `Note` (заголовок, текст, дата создания)
+- **DAO** — интерфейс для операций с БД (CRUD)
+- **RoomDatabase** — конфигурация и инициализация базы данных
+- **RecyclerView** — отображение списка заметок
+
+## 📈 Возможности для расширения
+
+- [ ] Категоризация заметок по папкам/тегам
+- [ ] Поиск по заметкам
+- [ ] Прикрепление фотографий
+- [ ] Голосовые заметки
+- [ ] Синхронизация с облаком
+- [ ] Тёмная тема
+- [ ] Виджет на рабочий стол
+- [ ] Unit и UI-тесты
+
+## 📸 Скриншоты
+
+> Добавьте скриншоты приложения в папку `screenshots/`
+
+## 👨‍💻 Автор
+
+**mafen1** — [GitHub](https://github.com/mafen1)
+
+## 📄 Лицензия
+
+MIT

@@ -27,7 +27,7 @@ fun Application.LoginRouting() {
                     User(
                         id = 0, // 0 означает, что ID сгенерируется БД
                         name = user.name,
-                        username = user.username,
+                        userName = user.userName,
                         listUserName = listOf(),
                         token = loginResponse.token,
                         password = user.password
@@ -37,7 +37,7 @@ fun Application.LoginRouting() {
                 println(user)
                 call.respond(loginResponse)
             } catch (e: Exception) {
-                call.respondText("Ошибка ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to (e.message ?: "Unknown error")))
             }
         }
 
@@ -48,9 +48,9 @@ fun Application.LoginRouting() {
         post("/login") {
             try {
                 val loginRequest: LoginRequest = call.receive()
-                if (loginImpl.validateUserByUserName(loginRequest.username)) {
+                if (loginImpl.validateUserByUserName(loginRequest.userName)) {
 
-                    val user = UserRepositoryImpl().findUserUserName(loginRequest.username)
+                    val user = UserRepositoryImpl().findUserUserName(loginRequest.userName)
                     call.respond(HttpStatusCode.OK, user)
 
                 } else {
@@ -78,7 +78,7 @@ fun Application.LoginRouting() {
                     call.respond(HttpStatusCode.BadRequest, "Пользователь не найден")
                 }
             } catch (e: Exception) {
-                call.respondText("Ошибка ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to (e.message ?: "Unknown error")))
             }
         }
     }
