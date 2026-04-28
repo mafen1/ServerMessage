@@ -1,98 +1,117 @@
-# NOTESAPP
+# SERVERMESSAGE
 
-Android-приложение для создания и управления заметками, разработанное на **Kotlin**.
-
-## 📱 Описание
-
-NOTESAPP — это удобное приложение для быстрого создания, редактирования и хранения заметок прямо на вашем Android-устройстве.
+Backend-сервер для мессенджера, разработанный на **Ktor** (Kotlin) с поддержкой WebSocket для real-time коммуникации.
 
 ## 🚀 Технологии
 
 - **Kotlin** — основной язык
-- **Android SDK** — платформа
-- **Gradle** — система сборки
-- **Android Studio / IntelliJ IDEA** — среда разработки
-- **Room / SQLite** — локальная база данных для хранения заметок
+- **Ktor** — серверный фреймворк
+- **WebSockets** — real-time обмен сообщениями
+- **Koin** — Dependency Injection
+- **PostgreSQL** — основная база данных
+- **MongoDB** — документо-ориентированная БД
+- **Gson / kotlinx.serialization** — сериализация JSON
+- **Gradle (Kotlin DSL)** — сборка проекта
+- **Docker** — контейнеризация
 
-## 📋 Функциональность
+## 📋 Подключенные плагины
 
-- ✅ Создание новых заметок
-- ✅ Редактирование существующих заметок
-- ✅ Удаление заметок
-- ✅ Сохранение данных локально на устройстве
-- ✅ Простой и интуитивный интерфейс
-- ✅ Автоматическое сохранение при изменении
+| Плагин | Назначение |
+|--------|-----------|
+| `Routing` | Структурированная маршрутизация запросов |
+| `WebSockets` | Двусторонняя связь в реальном времени |
+| `Koin` | Внедрение зависимостей (DI) |
+| `Content Negotiation` | Автоматическое согласование контента |
+| `Call Logging` | Логирование HTTP-запросов |
+| `Call ID` | Идентификация запросов |
+| `Request Validation` | Валидация входящих данных |
+| `Authentication Basic` | Базовая HTTP-аутентификация |
+| `Sessions` | Управление сессиями |
+| `Caching Headers` | Кэширование на клиенте |
+| `Static Content` | Раздача статических файлов |
 
 ## 🛠 Установка и запуск
 
 ### Требования
 
-- Android Studio Arctic Fox или новее
 - JDK 11+
-- Android SDK 21+ (Android 5.0)
+- Gradle 7+
 
-### Запуск проекта
-
-1. Клонируйте репозиторий:
+### Запуск локально
 
 ```bash
-git clone https://github.com/mafen1/NOTESAPP.git
+git clone https://github.com/mafen1/SERVERMESSAGE.git
+cd SERVERMESSAGE
+./gradlew run
 ```
 
-2. Откройте проект в Android Studio
+Сервер будет доступен по адресу: `http://0.0.0.0:8080`
 
-3. Синхронизируйте Gradle-зависимости
-
-4. Запустите на эмуляторе или физическом устройстве
+### Запуск в Docker
 
 ```bash
-./gradlew installDebug
+./gradlew buildImage
+docker run -p 8080:8080 servermessage
 ```
 
 ## 📁 Структура проекта
 
 ```
-NOTESAPP/
-├── app/
-│   ├── src/main/
-│   │   ├── java/com/mafen/notesapp/
-│   │   │   ├── MainActivity.kt        # Главная активность (список заметок)
-│   │   │   ├── NoteDetailActivity.kt  # Экран редактирования заметки
-│   │   │   ├── data/                  # Слой данных (Room/DAO)
-│   │   │   │   ├── Note.kt            # Модель заметки
-│   │   │   │   ├── NoteDao.kt         # Data Access Object
-│   │   │   │   └── NoteDatabase.kt    # Конфигурация БД
-│   │   │   └── adapter/               # RecyclerView адаптер
-│   │   └── res/                       # Ресурсы
-│   └── build.gradle.kts
+SERVERMESSAGE/
+├── src/main/kotlin/
+│   └── com/mafen/servermessage/
+│       ├── Application.kt      # Точка входа
+│       ├── plugins/            # Подключенные плагины Ktor
+│       └── routing/            # Маршруты API
+├── src/main/resources/
+│   └── application.conf        # Конфигурация приложения
 ├── build.gradle.kts
-├── settings.gradle.kts
-└── gradle.properties
+└── Dockerfile
 ```
 
-## 🏗 Архитектура
+## 📡 API Endpoints
 
-Приложение использует локальную базу данных **Room (SQLite)** для постоянного хранения заметок. Архитектура включает:
+### WebSocket
 
-- **Entity** — модель данных `Note` (заголовок, текст, дата создания)
-- **DAO** — интерфейс для операций с БД (CRUD)
-- **RoomDatabase** — конфигурация и инициализация базы данных
-- **RecyclerView** — отображение списка заметок
+- `ws://localhost:8080/ws` — подключение для обмена сообщениями в реальном времени
+
+### HTTP
+
+- `GET /` — проверка работоспособности сервера
+
+## 🔧 Конфигурация БД
+
+### PostgreSQL
+
+Настройка подключения в `application.conf`:
+
+```hocon
+postgres {
+    host = "localhost"
+    port = 5432
+    database = "message_db"
+    user = "postgres"
+    password = "password"
+}
+```
+
+### MongoDB
+
+```hocon
+mongodb {
+    connection = "mongodb://localhost:27017"
+    database = "message_db"
+}
+```
 
 ## 📈 Возможности для расширения
 
-- [ ] Категоризация заметок по папкам/тегам
-- [ ] Поиск по заметкам
-- [ ] Прикрепление фотографий
-- [ ] Голосовые заметки
-- [ ] Синхронизация с облаком
-- [ ] Тёмная тема
-- [ ] Виджет на рабочий стол
-- [ ] Unit и UI-тесты
-
-## 📸 Скриншоты
-
-> Добавьте скриншоты приложения в папку `screenshots/`
+- [ ] Реализация REST API для управления пользователями
+- [ ] Авторизация и регистрация через JWT
+- [ ] Хранение истории сообщений в БД
+- [ ] Групповые чаты
+- [ ] Уведомления о доставке и прочтении
+- [ ] Unit-тесты
 
 ## 👨‍💻 Автор
 
