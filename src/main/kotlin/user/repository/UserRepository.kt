@@ -7,15 +7,17 @@ import com.example.user.model.UserResponse
 
 interface UserRepository {
 
-    fun addUser(user: User)
-     fun allUser(): List<UserResponse>
-    fun addFriends(userName: String)
-    fun findUser(user: User): User
-    fun findUserToken(token: String): User
-    fun findUserByUserName(userName: UserRequest): UserResponse
+    fun addUser(name: String, userName: String, password: String, listUserName: List<String> = emptyList())
+    fun allUser(): List<UserResponse>
+    fun findUser(userName: String): User
+    fun findUserByUserName(userRequest: UserRequest): UserResponse
     fun findUserByStr(string: UserRequest): List<UserResponse>
 
     fun findUserByUserNamePassword(loginRequest: LoginRequest): User
     fun findUserUserName(userName: String): User
+    fun existsByUserName(userName: String): Boolean
+    fun updateProfile(userName: String, name: String, password: String?): User
+    fun updatePublicKey(userName: String, publicKey: String)
+    fun getPublicKey(userName: String): String?
 
 }

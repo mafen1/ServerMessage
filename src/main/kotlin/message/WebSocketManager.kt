@@ -1,22 +1,36 @@
 package com.example.message
 
 import io.ktor.websocket.*
+import java.util.concurrent.ConcurrentHashMap
 
-// todo interface
-object WebSocketManager {
-    private val currentSession = mutableMapOf<String, WebSocketSession>()
+interface WebSocketManager {
+    fun addSession(userName: String, webSocketSession: WebSocketSession)
+    fun removeSession(userName: String)
+    suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, messageType: String, message: String)
+    suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, messageType: String, clientMessageId: String, message: String)
+    fun session(): Map<String, WebSocketSession>
+}
 
-    fun addSession(userName: String, webSocketSession: WebSocketSession) {
+class WebSocketManagerImpl : WebSocketManager {
+    private val currentSession = ConcurrentHashMap<String, WebSocketSession>()
+
+    override fun addSession(userName: String, webSocketSession: WebSocketSession) {
         currentSession[userName] = webSocketSession
-        println("Добавлена сессия для $userName. Текущие сессии: ${currentSession.keys}")
     }
 
-    suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, message: String){
-        // Формат: senderUsername:message
-        val formattedMessage = "$senderUsername:$message"
+    override fun removeSession(userName: String) {
+        currentSession.remove(userName)
+    }
+
+    override suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, messageType: String, message: String) {
+        val formattedMessage = "$senderUsername:$messageType:$message"
         currentSession[userName]?.send(formattedMessage)
-        println("✅ Отправка сообщения: «$formattedMessage» ➔ $userName (от $senderUsername)")
     }
 
-    fun session() = currentSession
+    override suspend fun sendMessageCurrentUser(userName: String, senderUsername: String, messageType: String, clientMessageId: String, message: String) {
+        val formattedMessage = "$senderUsername:$messageType:$clientMessageId:$message"
+        currentSession[userName]?.send(formattedMessage)
+    }
+
+    override fun session() = currentSession.toMap()
 }

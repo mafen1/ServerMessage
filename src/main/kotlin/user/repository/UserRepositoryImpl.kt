@@ -2,26 +2,40 @@ package com.example.user.repository
 
 import com.example.data.database.table.UserTable
 import com.example.login.model.LoginRequest
+import com.example.security.PasswordHasher
 import com.example.user.model.User
 import com.example.user.model.UserRequest
 import com.example.user.model.UserResponse
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
-class UserRepositoryImpl() : UserRepository {
+class UserRepositoryImpl : UserRepository {
 
-
-    override fun addUser(user: User) {
+    override fun addUser(
+        name: String,
+        userName: String,
+        password: String,
+        listUserName: List<String>
+    ) {
         transaction {
-            val userId = UserTable.insert {
-                it[name] = user.name
-                it[username] = user.userName
-                it[listUserName] = listOf()
-                it[token] = user.token.toString()
-                it[password] = user.password ?: ""
-            } get UserTable.id
+            val alreadyExists = UserTable.selectAll().where {
+                UserTable.username eq userName
+            }.count() > 0
+
+            if (alreadyExists) {
+                throw IllegalArgumentException("UserAlreadyExists")
+            }
+
+            UserTable.insert {
+                it[UserTable.name] = name
+                it[UserTable.username] = userName
+                it[UserTable.listUserName] = listUserName
+                it[UserTable.password] = PasswordHasher.hash(password)
+            }
         }
     }
 
@@ -34,29 +48,10 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
-    override fun addFriends(userName: String) {
-        transaction {
-            UserTable.insert {
-                it[this.listUserName]
-            }
-        }
-    }
-
-    override fun findUser(user: User): User {
+    override fun findUser(userName: String): User {
         return transaction {
             UserTable.selectAll().where {
-                UserTable.username eq user.userName
-            }
-                .firstOrNull()
-                ?.toUser()
-                ?: throw IllegalArgumentException("UserNotFound")
-        }
-    }
-
-    override fun findUserToken(token: String): User {
-        return transaction {
-            UserTable.selectAll().where {
-                UserTable.token eq token
+                UserTable.username eq userName
             }
                 .firstOrNull()
                 ?.toUser()
@@ -85,22 +80,27 @@ class UserRepositoryImpl() : UserRepository {
 
         }
     }
-    // todo password
+
     override fun findUserByUserNamePassword(loginRequest: LoginRequest): User {
         return transaction {
-            UserTable.selectAll().where{
+            val row = UserTable.selectAll().where {
                 UserTable.username eq loginRequest.userName
-                UserTable.name eq loginRequest.name
-                UserTable.password eq loginRequest.password
             }
                 .firstOrNull()
-                ?.toUser()
                 ?: throw IllegalArgumentException("UserNotFound")
+
+            val passwordHash = row[UserTable.password]
+            if (!PasswordHasher.verify(loginRequest.password, passwordHash)) {
+                throw IllegalArgumentException("InvalidPassword")
+            }
+
+            row.toUser()
         }
     }
+
     override fun findUserUserName(userName: String): User {
         return transaction {
-            UserTable.selectAll().where{
+            UserTable.selectAll().where {
                 UserTable.username eq userName
             }
                 .firstOrNull()
@@ -109,13 +109,55 @@ class UserRepositoryImpl() : UserRepository {
         }
     }
 
+    override fun existsByUserName(userName: String): Boolean = transaction {
+        UserTable.selectAll().where {
+            UserTable.username eq userName
+        }.count() > 0
+    }
+
+    override fun updateProfile(userName: String, name: String, password: String?): User = transaction {
+        val updated = UserTable.update({ UserTable.username eq userName }) {
+            it[UserTable.name] = name
+            if (!password.isNullOrBlank()) {
+                it[UserTable.password] = PasswordHasher.hash(password)
+            }
+        }
+
+        if (updated == 0) {
+            throw IllegalArgumentException("UserNotFound")
+        }
+
+        UserTable.selectAll().where {
+            UserTable.username eq userName
+        }
+            .firstOrNull()
+            ?.toUser()
+            ?: throw IllegalArgumentException("UserNotFound")
+    }
+
+    override fun updatePublicKey(userName: String, publicKey: String) {
+        transaction {
+            val updated = UserTable.update({ UserTable.username eq userName }) {
+                it[UserTable.publicKey] = publicKey
+            }
+            if (updated == 0) {
+                throw IllegalArgumentException("UserNotFound")
+            }
+        }
+    }
+
+    override fun getPublicKey(userName: String): String? = transaction {
+        UserTable.selectAll()
+            .where { UserTable.username eq userName }
+            .firstOrNull()
+            ?.let { it[UserTable.publicKey] }
+    }
+
     private fun ResultRow.toUser() = User(
         id = this[UserTable.id],
         name = this[UserTable.name],
         userName = this[UserTable.username],
-        listUserName = this[UserTable.listUserName],
-        token = this[UserTable.token],
-        password = this[UserTable.password]
+        listUserName = this[UserTable.listUserName]
     )
 
     private fun ResultRow.toUserResponse() = UserResponse(
@@ -123,9 +165,4 @@ class UserRepositoryImpl() : UserRepository {
         name = this[UserTable.name]
     )
 
-
 }
-
-
-
-

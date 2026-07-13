@@ -10,8 +10,10 @@ object UserTable: Table() {
 
     val id = integer("id").autoIncrement()
     val name = varchar("name", 100)
-    val username = varchar("username", 100)
+    val username = varchar("username", 100).uniqueIndex()
     val listUserName = array("listUserName", columnType = VarCharColumnType())
-    val token = varchar("token", 10000)
-    val password: Column<String?> = varchar("password", 100) as Column<String?>
+    val password: Column<String> = varchar("password", 255)
+    val publicKey = text("public_key").nullable()
+
+    override val primaryKey = PrimaryKey(id)
 }

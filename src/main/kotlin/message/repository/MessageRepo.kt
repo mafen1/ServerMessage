@@ -1,22 +1,25 @@
 package com.example.message.repository
 
 import com.example.message.model.Message
+import com.example.message.table.ChatKeyTable
 import com.example.message.table.MessageTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class MessageRepoImpl() : MessageRepository {
+class MessageRepoImpl : MessageRepository {
 
-    override fun addMessageToDB(id: Int, senderUsername: String, recipientUsername: String, message: String) {
+    override fun addMessageToDB(senderUsername: String, recipientUsername: String, message: String, messageType: String) {
         transaction {
             MessageTable.insert {
-                it[MessageTable.id] = id
                 it[MessageTable.name] = senderUsername
                 it[MessageTable.recipientUsername] = recipientUsername
                 it[MessageTable.message] = message
+                it[MessageTable.messageType] = messageType
             }
         }
     }
@@ -27,7 +30,8 @@ class MessageRepoImpl() : MessageRepository {
                 id = row[MessageTable.id],
                 name = row[MessageTable.name],
                 recipientUsername = row[MessageTable.recipientUsername],
-                message = row[MessageTable.message]
+                message = row[MessageTable.message],
+                messageType = row[MessageTable.messageType]
             )
         }
     }
@@ -41,9 +45,31 @@ class MessageRepoImpl() : MessageRepository {
                 id = row[MessageTable.id],
                 name = row[MessageTable.name],
                 recipientUsername = row[MessageTable.recipientUsername],
-                message = row[MessageTable.message]
+                message = row[MessageTable.message],
+                messageType = row[MessageTable.messageType]
             )
         }
     }
-}
 
+    override fun saveWrappedChatKey(chatId: String, recipientUsername: String, wrappedKey: String) {
+        transaction {
+            ChatKeyTable.deleteWhere {
+                (ChatKeyTable.chatId eq chatId) and (ChatKeyTable.recipientUsername eq recipientUsername)
+            }
+            ChatKeyTable.insert {
+                it[ChatKeyTable.chatId] = chatId
+                it[ChatKeyTable.recipientUsername] = recipientUsername
+                it[ChatKeyTable.wrappedKey] = wrappedKey
+            }
+        }
+    }
+
+    override fun getWrappedChatKey(chatId: String, recipientUsername: String): String? = transaction {
+        ChatKeyTable.selectAll()
+            .where {
+                (ChatKeyTable.chatId eq chatId) and (ChatKeyTable.recipientUsername eq recipientUsername)
+            }
+            .firstOrNull()
+            ?.let { it[ChatKeyTable.wrappedKey] }
+    }
+}
