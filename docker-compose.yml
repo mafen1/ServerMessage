@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: server_message
+      POSTGRES_USER: ${DB_POSTGRES_USER:-mafen}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD:-mafen}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_POSTGRES_USER:-mafen} -d server_message"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env or environment, e.g. export JWT_SECRET=$(openssl rand -hex 32)}
+      DB_POSTGRES_URL: jdbc:postgresql://db:5432/server_message
+      DB_POSTGRES_USER: ${DB_POSTGRES_USER:-mafen}
+      DB_POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD:-mafen}
+    ports:
+      - "8081:8081"
+    volumes:
+      # загруженные изображения переживают пересоздание контейнера
+      - uploads:/app/images
+
+volumes:
+  pgdata:
+  uploads:

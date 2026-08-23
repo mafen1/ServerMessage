@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NewsResponse(
 
+    val id: Int,
     var userNameAuthor: String,
     var nameAuthor: String,
     var date: String,
@@ -13,5 +14,6 @@ data class NewsResponse(
     val avatarAuthor: String?,
     val description: String,
     val comment: List<String>,
-    val newsImage: String
+    val newsImage: String,
+    val likedUsers: List<String> = emptyList()
 )

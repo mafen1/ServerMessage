@@ -2,7 +2,6 @@ package com.example.news.model
 
 import kotlinx.serialization.Serializable
 
-// todo count comment Like
 @Serializable
 data class NewsRequest(
     var userNameAuthor: String,
@@ -10,8 +9,8 @@ data class NewsRequest(
     var date: String,
     val countLike: Int,
     val countComment: Int,
-    val avatarAuthor: String?,
-    val description: String,
-    val comment: List<String>
-
+    // значения по умолчанию: старые клиенты могут не присылать эти поля
+    val avatarAuthor: String? = null,
+    val description: String = "",
+    val comment: List<String> = emptyList()
 )

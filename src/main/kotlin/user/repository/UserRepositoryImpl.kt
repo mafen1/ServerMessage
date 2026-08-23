@@ -6,12 +6,8 @@ import com.example.security.PasswordHasher
 import com.example.user.model.User
 import com.example.user.model.UserRequest
 import com.example.user.model.UserResponse
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 class UserRepositoryImpl : UserRepository {
 
@@ -71,10 +67,14 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override fun findUserByStr(string: UserRequest): List<UserResponse> {
-        val str = "${string.userName}%"
+        val raw = string.userName.trim()
+        val normalized = raw.removePrefix("@").trim()
+        if (normalized.isBlank()) return emptyList()
+        // кейс-инсенситив поиск подстроки, работает как с "@test" так и "test"
+        val pattern = "%$normalized%"
         return transaction {
             UserTable.selectAll().where {
-                UserTable.username like str
+                UserTable.username.lowerCase() like pattern.lowercase()
             }
                 .map { it.toUserResponse() }
 

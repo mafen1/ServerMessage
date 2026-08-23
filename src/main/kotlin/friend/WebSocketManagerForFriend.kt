@@ -1,17 +1,36 @@
 package com.example.friend
 
 import io.ktor.websocket.*
+import java.util.concurrent.ConcurrentHashMap
 
-object WebSocketManagerForFriend {
-    private val session = mutableMapOf<String, WebSocketSession>()
+interface FriendWebSocketManager {
+    fun addSession(userName: String, webSocketSession: WebSocketSession)
+    fun removeSession(userName: String)
+    fun removeSessionIfSame(userName: String, webSocketSession: WebSocketSession)
+    suspend fun sendNotification(message: String, userName: String)
+    fun session(): Map<String, WebSocketSession>
+}
 
-    fun addSession(userName: String, webSocketSession: WebSocketSession){
+class FriendWebSocketManagerImpl : FriendWebSocketManager {
+    private val session = ConcurrentHashMap<String, WebSocketSession>()
+
+    override fun addSession(userName: String, webSocketSession: WebSocketSession) {
         session[userName] = webSocketSession
     }
 
-    suspend fun sendNotification(message: String, userName: String){
-        session[userName]?.send(Frame.Text(message))
-        println("✅ Отправка сообщения: «$message» ➔ $userName")
+    override fun removeSession(userName: String) {
+        session.remove(userName)
     }
-    fun session() = session
+
+    override fun removeSessionIfSame(userName: String, webSocketSession: WebSocketSession) {
+        if (session[userName] === webSocketSession) {
+            session.remove(userName)
+        }
+    }
+
+    override suspend fun sendNotification(message: String, userName: String) {
+        session[userName]?.send(Frame.Text(message))
+    }
+
+    override fun session() = session.toMap()
 }

@@ -12,10 +12,11 @@ object NewsTable: Table(){
     val date: Column<String> = varchar("date", 255)
     val countLike: Column<Int> = integer("countLikes")
     val countComment: Column<Int> = integer("countComment")
-    val avatarString: Column<String?> = varchar("avatarString", 255) as Column<String?>
+    val avatarString: Column<String?> = varchar("avatarString", 255).nullable()
     val description: Column<String> = varchar("description", 255)
     val comments = array("Comments", columnType = VarCharColumnType())
-    var imageNews: Column<String> = varchar("imagenews", 255)
+    val likedUsers = array("likedUsers", columnType = VarCharColumnType()).default(emptyList())
+    var imageNews: Column<String> = varchar("imagenews", 255).default("")
 
     override val primaryKey = PrimaryKey(id)
 }

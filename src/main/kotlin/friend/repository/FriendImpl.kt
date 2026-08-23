@@ -15,7 +15,7 @@ class FriendImpl: Friend {
             FriendRequestTable.insert {
                 it[senderUserName] = friendRequest.senderUserName
                 it[receiver] = friendRequest.receiverUserName
-                it[status] = friendRequest.status
+                it[status] = "pending"
             }
         }
     }
@@ -32,7 +32,8 @@ class FriendImpl: Friend {
 
             FriendRequestTable.update({
                 (FriendRequestTable.senderUserName eq senderUsername) and
-                (FriendRequestTable.receiver eq receiverUsername)
+                (FriendRequestTable.receiver eq receiverUsername) and
+                (FriendRequestTable.status eq "pending")
             }) {
                 it[status] = "accepted"
             }
@@ -79,14 +80,10 @@ class FriendImpl: Friend {
             }.firstOrNull()
             
             if (user == null) {
-                println("getFriends: User '$username' not found in database")
                 return@transaction emptyList()
             }
-            
-            val friends = user.get(UserTable.listUserName)
-            println("getFriends for '$username': $friends")
-            
-            friends ?: emptyList()
+
+            user.get(UserTable.listUserName)
         }
     }
 
@@ -109,9 +106,10 @@ class FriendImpl: Friend {
     override fun hasPendingRequest(sender: String, receiver: String): Boolean {
         return transaction {
             FriendRequestTable.selectAll().where {
-                (FriendRequestTable.senderUserName eq sender) and
-                (FriendRequestTable.receiver eq receiver) and
-                (FriendRequestTable.status eq "pending")
+                (
+                    ((FriendRequestTable.senderUserName eq sender) and (FriendRequestTable.receiver eq receiver)) or
+                    ((FriendRequestTable.senderUserName eq receiver) and (FriendRequestTable.receiver eq sender))
+                ) and (FriendRequestTable.status eq "pending")
             }.count() > 0
         }
     }
@@ -121,7 +119,11 @@ class FriendImpl: Friend {
             val senderFriends = UserTable.selectAll().where {
                 UserTable.username eq sender
             }.firstOrNull()?.get(UserTable.listUserName) ?: emptyList()
-            senderFriends.contains(receiver)
+            if (senderFriends.contains(receiver)) return@transaction true
+            val receiverFriends = UserTable.selectAll().where {
+                UserTable.username eq receiver
+            }.firstOrNull()?.get(UserTable.listUserName) ?: emptyList()
+            receiverFriends.contains(sender)
         }
     }
 }

@@ -8,6 +8,6 @@ interface Login {
     fun createJWT(user: User): LoginResponse
     fun validateToken(token: String): Boolean
     fun validateUser(user: User): Boolean
-    fun loginAccount(loginRequest: LoginRequest): User
+    fun loginAccount(loginRequest: LoginRequest): LoginResponse
     fun validateUserByUserName(userName: String): Boolean
 }

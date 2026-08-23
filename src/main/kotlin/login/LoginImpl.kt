@@ -5,27 +5,27 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.example.login.model.LoginRequest
 import com.example.login.model.LoginResponse
 import com.example.user.model.User
-import com.example.user.repository.UserRepositoryImpl
+import com.example.user.repository.UserRepository
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
-class LoginImpl : Login {
+class LoginImpl(
+    private val userRepository: UserRepository,
+    private val jwtSettings: JwtSettings
+) : Login {
 
     override fun createJWT(user: User): LoginResponse {
         val time = Clock.System.now().plus(70.days)
 
-        val jwtSecret = System.getenv("JWT_SECRET") 
-            ?: System.getProperty("JWT_SECRET")
-            ?: "x7K9mP2vL5nQ8wR3tY6uI0oA4sD7fG1hJ"
-
         val token = JWT.create()
-            .withAudience("user-server")
-            .withIssuer("http://localhost/")
+            .withAudience(jwtSettings.audience)
+            .withIssuer(jwtSettings.issuer)
+            .withClaim("userName", user.userName)
             .withExpiresAt(time.toJavaInstant())
-            .sign(Algorithm.HMAC256(jwtSecret))
+            .sign(Algorithm.HMAC256(jwtSettings.secret))
 
         return LoginResponse(
             token = token,
@@ -34,44 +34,28 @@ class LoginImpl : Login {
         )
     }
 
-    override fun validateToken(token: String): Boolean {
-        val newSecret = System.getenv("JWT_SECRET") 
-            ?: System.getProperty("JWT_SECRET")
-            ?: "x7K9mP2vL5nQ8wR3tY6uI0oA4sD7fG1hJ"
-        val oldSecret = "my-secret-key-12345"
-        
-        return try {
-            // Пробуем сначала новый secret
-            JWT.require(Algorithm.HMAC256(newSecret))
-                .withAudience("user-server")
-                .withIssuer("http://localhost/")
+    override fun validateToken(token: String): Boolean =
+        try {
+            JWT.require(Algorithm.HMAC256(jwtSettings.secret))
+                .withAudience(jwtSettings.audience)
+                .withIssuer(jwtSettings.issuer)
                 .build()
                 .verify(token)
             true
-        } catch (e: Exception) {
-            try {
-                // Пробуем старый secret для backward compatibility
-                JWT.require(Algorithm.HMAC256(oldSecret))
-                    .withAudience("message-app-audience")
-                    .withIssuer("message-app-domain")
-                    .build()
-                    .verify(token)
-                true
-            } catch (e2: Exception) {
-                false
-            }
+        } catch (_: Exception) {
+            false
         }
-    }
 
     override fun validateUser(user: User): Boolean =
-        UserRepositoryImpl().findUser(user).userName.isNotEmpty()
+        runCatching { userRepository.findUser(user.userName) }.getOrNull()?.userName?.isNotEmpty() == true
 
-    override fun loginAccount(loginRequest: LoginRequest): User =
-        UserRepositoryImpl().findUserByUserNamePassword(loginRequest)
+    override fun loginAccount(loginRequest: LoginRequest): LoginResponse {
+        val user = userRepository.findUserByUserNamePassword(loginRequest)
+        return createJWT(user)
+    }
 
     override fun validateUserByUserName(userName: String): Boolean =
-        UserRepositoryImpl().findUserUserName(userName).token?.isNotEmpty()
-            ?: throw IllegalArgumentException("Не найден пользователь")
+        runCatching { userRepository.findUserUserName(userName) }.getOrNull()?.userName?.isNotEmpty() == true
 
 
 }

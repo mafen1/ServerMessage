@@ -9,7 +9,6 @@ data class User(
     val name: String = "",
     val userName: String = "",
     val listUserName: List<String>? = emptyList(),
-    val token: String? = "",
     val password: String? = ""
 )
 
